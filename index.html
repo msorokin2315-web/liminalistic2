@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LIMINALISTIC — Memory (v beta 1.0) by Maxim Studio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0f0f1a 100%);
+            color: #c9c9c9;
+            line-height: 1.8;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border-bottom: 2px solid #333;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            letter-spacing: 8px;
+            color: #e0e0e0;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: #888;
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+        }
+
+        .first-site {
+            font-size: 0.75rem;
+            color: #666;
+            font-style: italic;
+            border-top: 1px solid #333;
+            border-bottom: 1px solid #333;
+            padding: 10px;
+            display: inline-block;
+            margin-top: 15px;
+        }
+
+        .content-section {
+            padding: 40px 20px;
+            background: rgba(10, 10, 15, 0.8);
+            margin: 30px 0;
+            border-left: 3px solid #444;
+        }
+
+        p {
+            margin-bottom: 20px;
+            font-size: 1rem;
+        }
+
+        h2 {
+            color: #e0e0e0;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+        }
+
+        .liminal-photo {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            margin: 40px 0;
+            border: 1px solid #333;
+            filter: grayscale(40%) contrast(110%) brightness(90%);
+        }
+
+        .music-section {
+            text-align: center;
+            padding: 50px 20px;
+            background: rgba(0, 0, 0, 0.9);
+            margin: 40px 0;
+            border-top: 2px solid #333;
+            border-bottom: 2px solid #333;
+        }
+
+        .music-link {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #1a1a2e, #2a2a4e);
+            color: #e0e0e0;
+            text-decoration: none;
+            border: 1px solid #444;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            margin: 20px 0;
+            cursor: pointer;
+        }
+
+        .music-link:hover {
+            background: linear-gradient(45deg, #2a2a4e, #3a3a6e);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .game-section {
+            padding: 40px 20px;
+            background: rgba(5, 5, 10, 0.95);
+            margin: 40px 0;
+            text-align: center;
+            border: 2px solid #333;
+        }
+
+        .game-info {
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            color: #aaa;
+        }
+
+        .score-display {
+            font-size: 1.3rem;
+            color: #e0e0e0;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+
+        .game-images {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .game-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border: 2px solid #444;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            filter: grayscale(30%);
+        }
+
+        .game-image:hover {
+            border-color: #888;
+            transform: scale(1.02);
+            filter: grayscale(0%);
+        }
+
+        .game-image.selected {
+            border-color: #fff;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .game-image.correct {
+            border-color: #4CAF50;
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
+        }
+
+        .game-image.wrong {
+            border-color: #f44336;
+            box-shadow: 0 0 20px rgba(244, 67, 54, 0.5);
+        }
+
+        .game-button {
+            padding: 15px 40px;
+            background: linear-gradient(45deg, #1a1a2e, #2a2a4e);
+            color: #e0e0e0;
+            border: 1px solid #444;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            display: inline-block;
+        }
+
+        .game-button:hover {
+            background: linear-gradient(45deg, #2a2a4e, #3a3a6e);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+
+        .game-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .result-message {
+            font-size: 1.2rem;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .result-correct {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+            border: 1px solid #4CAF50;
+        }
+
+        .result-wrong {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+            border: 1px solid #f44336;
+        }
+
+        .music-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #444;
+            color: #888;
+            cursor: pointer;
+            z-index: 1000;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        .music-control:hover {
+            background: rgba(20, 20, 30, 0.9);
+            color: #e0e0e0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border-top: 2px solid #333;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 1.8rem; letter-spacing: 4px; }
+            .liminal-photo { height: 250px; }
+            .game-images { grid-template-columns: 1fr; }
+            .game-image { height: 200px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Фоновая музыка -->
+    <audio id="bgMusic" loop>
+        <source src="memory.mp3" type="audio/mpeg">
+        <source src="memory.wav" type="audio/wav">
+        Ваш браузер не поддерживает аудио.
+    </audio>
+
+    <header>
+        <h1>LIMINALISTIC</h1>
+        <div class="subtitle">MEMORY • THRESHOLD • TRANSITION</div>
+        <div class="subtitle">(v beta 1.0) by Maxim Studio</div>
+        <div class="first-site">✨ Это мой первый опубликованный сайт ✨</div>
+    </header>
+
+    <div class="container">
+        <section class="content-section">
+            <h2>Что такое лиминальность?</h2>
+            <p>
+                Лиминальность — это состояние «между». Порог, переход, граница. 
+                Лиминальные пространства — это места, которые находятся между точкой А и точкой Б.
+            </p>
+            <p>
+                Примеры: пустые коридоры, заброшенные торговые центры, подземные парковки, 
+                отели, аэропорты ночью, школьные коридоры после уроков.
+            </p>
+        </section>
+
+        <img src="https://images.unsplash.com/photo-1519508234439-4f23643125c1?w=800&h=400&fit=crop" 
+             alt="Empty hallway" class="liminal-photo">
+
+        <section class="content-section">
+            <h2>Почему это важно?</h2>
+            <p>
+                Лиминальные пространства вызывают странное чувство — одновременно знакомое и чужое. 
+                Это места без людей, застывшие во времени.
+            </p>
+            <p>
+                Они напоминают нам о переходах в жизни: детство → взрослость, одно состояние → другое. 
+                В лиминальности есть что-то тревожное, но и притягательное.
+            </p>
+        </section>
+
+        <img src="https://static.life.ru/publications/2021/5/25/1474143833463.2034.jpeg" 
+             alt="Empty parking garage" class="liminal-photo">
+
+        <section class="content-section">
+            <h2>Memory</h2>
+            <p>
+                Memory — это воспоминание о месте, которого не существовало. 
+                Чувство ностальгии по времени, в котором ты не жил.
+            </p>
+            <p>
+                Лиминальные пространства часто вызывают déjà vu — ощущение, 
+                что ты уже был здесь, хотя это невозможно.
+            </p>
+        </section>
+
+        <img src="https://static.life.ru/publications/2021/5/25/534843956430.03235.jpeg" 
+             alt="Empty office space" class="liminal-photo">
+
+        <section class="content-section">
+            <h2>Где искать лиминальность?</h2>
+            <p>
+                В повседневных местах: пустые лестничные клетки, коридоры больниц, 
+                залы ожидания, тоннели метро, пустые улицы ночью.
+            </p>
+            <p>
+                Ключевые признаки: отсутствие людей, искусственное освещение, 
+                повторяющаяся архитектура, ощущение «застревания».
+            </p>
+        </section>
+
+        <img src="https://i.pinimg.com/736x/75/4a/80/754a808d10acfaf722483dcefea7552e.jpg" 
+             alt="Empty mall corridor" class="liminal-photo">
+
+        <section class="content-section">
+            <h2>Лиминальность в интернете</h2>
+            <p>
+                Лиминальные пространства стали интернет-эстетикой. 
+                Их фотографируют, делятся, создают на их основе арт и игры.
+            </p>
+            <p>
+                Это способ выразить тревогу современного человека — 
+                постоянное ощущение перехода, неопределённости, «между».
+            </p>
+        </section>
+
+        <img src="https://images.unsplash.com/photo-1560185007-cde436f6a4d0?w=800&h=400&fit=crop" 
+             alt="Empty hotel hallway" class="liminal-photo">
+
+        <section class="content-section">
+            <h2>Итог</h2>
+            <p>
+                Лиминальность — это не просто картинки пустых мест. 
+                Это состояние, которое мы все знаем.
+            </p>
+            <p>
+                Мы живём в переходах. Между прошлым и будущим. 
+                Между тем, кто был, и тем, кем станем.
+            </p>
+        </section>
+
+        <img src="https://images.unsplash.com/photo-1518709322940-42350e41d9c7?w=800&h=400&fit=crop" 
+             alt="Empty subway station" class="liminal-photo">
+
+        <section class="music-section">
+            <h2 style="color: #e0e0e0; margin-bottom: 20px; letter-spacing: 4px;">🎵 IT'S JUST A BURNING MEMORY</h2>
+            <p style="color: #888; margin-bottom: 20px;">
+                Фоновая музыка: memory.mp3 (зациклена)
+            </p>
+            <a href="https://ru.hitmoz.org/song/78086639" target="_blank" class="music-link">
+                ▶ СЛУШАТЬ НА HITS MOZ
+            </a>
+            <p style="color: #666; font-size: 0.8rem; margin-top: 20px;">
+                (откроется в новой вкладке)
+            </p>
+        </section>
+
+        <section class="game-section">
+            <h2 style="color: #e0e0e0; margin-bottom: 15px; letter-spacing: 3px;">🎮 LIMINAL QUIZ</h2>
+            <div class="game-info">
+                Выбери лиминальное фото из двух вариантов
+            </div>
+            <div class="score-display">
+                Счёт: <span id="score">0</span> / <span id="total">0</span>
+            </div>
+            <div class="game-images" id="gameImages">
+                <img id="image1" class="game-image" src="" alt="Image 1" onclick="selectImage(1)">
+                <img id="image2" class="game-image" src="" alt="Image 2" onclick="selectImage(2)">
+            </div>
+            <button id="submitBtn" class="game-button" onclick="submitAnswer()">
+                ОТВЕТИТЬ
+            </button>
+            <button id="nextBtn" class="game-button" onclick="nextQuestion()" style="display: none;">
+                СЛЕДУЮЩИЙ ВОПРОС
+            </button>
+            <div id="resultMessage" class="result-message"></div>
+        </section>
+    </div>
+
+    <footer>
+        <p>LIMINALISTIC © 2026</p>
+        <p style="margin-top: 10px;">Переход никогда не заканчивается.</p>
+    </footer>
+
+    <!-- Кнопка управления музыкой -->
+    <button class="music-control" onclick="toggleMusic()" id="musicBtn">
+        🔇 Музыка выкл
+    </button>
+
+    <script>
+        // === НАСТРОЙКИ ИГРЫ ===
+        const allImages = [
+            // Лиминальные фото (15 штук)
+            { url: 'https://disgustingmen.com/wp-content/uploads/2024/08/liminal-2.png', isLiminal: true },
+            { url: 'https://static.life.ru/publications/2021/5/25/534843956430.03235.jpeg', isLiminal: true },
+            { url: 'https://i.pinimg.com/736x/75/4a/80/754a808d10acfaf722483dcefea7552e.jpg', isLiminal: true },
+            { url: 'https://i.pinimg.com/736x/75/4a/80/754a808d10acfaf722483dcefea7552e.jpg', isLiminal: true },
+            { url: 'https://spectate.ru/wp-content/uploads/2025/09/2.jpg', isLiminal: true },
+            { url: 'https://static.life.ru/publications/2021/5/25/1474143833463.2034.jpeg', isLiminal: true },
+            { url: 'https://static.life.ru/publications/2021/5/25/1474143833463.2034.jpeg', isLiminal: true },
+            { url: 'https://static.life.ru/publications/2021/5/25/1474143833463.2034.jpeg', isLiminal: true },
+            { url: 'https://i.pinimg.com/originals/f3/04/1e/f3041eb00fe04b6a8db6a30f090d028d.jpg', isLiminal: true },
+            { url: 'https://i.pinimg.com/originals/39/2e/f5/392ef5c9de06c9d9708f158496a8de18.jpg', isLiminal: true },
+            { url: 'https://i.pinimg.com/736x/6b/be/37/6bbe376d8f92dfbb738ad361534dc1c5.jpg', isLiminal: true },
+            { url: 'https://i.pinimg.com/736x/d2/9d/4d/d29d4de4f3b7da782b52806eea6fdc9f.jpg', isLiminal: true },
+            { url: 'https://avatars.mds.yandex.net/i?id=0b7064df1185f7a816d9fa09268f384e_l-5204968-images-thumbs&n=13', isLiminal: true },
+            { url: 'https://i.pinimg.com/originals/99/81/c5/9981c5a0c2de87e4df868fca4f87fa40.jpg?nii=t', isLiminal: true },
+            { url: 'https://avatars.mds.yandex.net/i?id=4d8bb4c34859e0f2e257194eccc3bb14_l-5236271-images-thumbs&n=13', isLiminal: true },
+            
+            // Обычные фото (15 штук)
+            { url: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=600&h=400&fit=crop', isLiminal: false },
+            { url: 'https://images.unsplash.com/photo-1501183638710-841dd1904471?w=600&h=400&fit=crop', isLiminal: false },
+            { url: 'https://images.unsplash.com/photo-1556912167-f556f1f39faa?w=600&h=400&fit=crop', isLiminal: false },
+            { url: 'https://images.unsplash.com/photo-1484154218962-a1c002085d2f?w=600&h=400&fit=crop', isLiminal: false },
+            { url: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=600&h=400&fit=crop', isLiminal: false },
+            { url: 'https://images.unsplash.com/photo-1502005229762-cf1b2da7c5d6?w=600&h=400&fit=crop', isLiminal: false },
+            { url: 'https://images.unsplash.com/photo-1484101403633-562f891dc89a?w=600&h=400&fit=crop', isLiminal: false },
+            { url: 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=600&h=400&fit=crop', isLiminal: false },
+            { url: 'https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=600&h=400&fit=crop', isLiminal: false },
+            { url: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=600&h=400&fit=crop', isLiminal: false },
+            { url: 'https://images.unsplash.com/photo-1507089947368-19c1da9775ae?w=600&h=400&fit=crop', isLiminal: false },
+            { url: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600&h=400&fit=crop', isLiminal: false },
+            { url: 'https://images.unsplash.com/photo-1463100099107-aa0980c362e6?w=600&h=400&fit=crop', isLiminal: false },
+            { url: 'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?w=600&h=400&fit=crop', isLiminal: false },
+            { url: 'https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=600&h=400&fit=crop', isLiminal: false }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let selectedImage = null;
+        let questions = [];
+        let isMusicPlaying = false;
+
+        // Управление музыкой
+        const bgMusic = document.getElementById('bgMusic');
+        const musicBtn = document.getElementById('musicBtn');
+
+        function toggleMusic() {
+            if (isMusicPlaying) {
+                bgMusic.pause();
+                musicBtn.textContent = '🔇 Музыка выкл';
+                isMusicPlaying = false;
+            } else {
+                bgMusic.play().catch(e => {
+                    console.log('Автовоспроизведение заблокировано браузером');
+                });
+                musicBtn.textContent = '🔊 Музыка вкл';
+                isMusicPlaying = true;
+            }
+        }
+
+        // Попытка включить музыку при первом клике
+        document.body.addEventListener('click', function initMusic() {
+            if (!isMusicPlaying) {
+                bgMusic.volume = 0.3;
+                bgMusic.play().then(() => {
+                    isMusicPlaying = true;
+                    musicBtn.textContent = '🔊 Музыка вкл';
+                }).catch(e => {
+                    console.log('Нужен клик для воспроизведения');
+                });
+            }
+            document.body.removeEventListener('click', initMusic);
+        }, { once: true });
+
+        // Перемешать массив
+        function shuffle(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        // Создать вопросы
+        function createQuestions() {
+            const liminalImages = allImages.filter(img => img.isLiminal);
+            const normalImages = allImages.filter(img => !img.isLiminal);
+            
+            const shuffledLiminal = shuffle(liminalImages);
+            const shuffledNormal = shuffle(normalImages);
+            
+            questions = [];
+            for (let i = 0; i < Math.min(shuffledLiminal.length, shuffledNormal.length); i++) {
+                questions.push({
+                    images: shuffle([shuffledLiminal[i], shuffledNormal[i]])
+                });
+            }
+        }
+
+        // Загрузить вопрос
+        function loadQuestion() {
+            if (currentQuestion >= questions.length) {
+                endGame();
+                return;
+            }
+
+            const question = questions[currentQuestion];
+            const img1 = document.getElementById('image1');
+            const img2 = document.getElementById('image2');
+            const submitBtn = document.getElementById('submitBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const resultMsg = document.getElementById('resultMessage');
+            
+            img1.src = question.images[0].url;
+            img2.src = question.images[1].url;
+            
+            img1.className = 'game-image';
+            img2.className = 'game-image';
+            img1.style.opacity = '1';
+            img2.style.opacity = '1';
+            img1.style.display = 'block';
+            img2.style.display = 'block';
+            
+            selectedImage = null;
+            submitBtn.disabled = false;
+            submitBtn.style.display = 'inline-block';
+            nextBtn.style.display = 'none';
+            resultMsg.style.display = 'none';
+            resultMsg.className = 'result-message';
+            
+            updateScore();
+        }
+
+        // Выбрать изображение
+        function selectImage(num) {
+            const nextBtn = document.getElementById('nextBtn');
+            if (nextBtn.style.display !== 'none') return;
+            
+            selectedImage = num;
+            
+            const img1 = document.getElementById('image1');
+            const img2 = document.getElementById('image2');
+            
+            img1.className = 'game-image';
+            img2.className = 'game-image';
+            
+            if (num === 1) {
+                img1.classList.add('selected');
+            } else {
+                img2.classList.add('selected');
+            }
+            
+            document.getElementById('submitBtn').disabled = false;
+        }
+
+        // Проверить ответ
+        function submitAnswer() {
+            if (!selectedImage) {
+                alert('Выберите изображение!');
+                return;
+            }
+            
+            const question = questions[currentQuestion];
+            const selectedImg = question.images[selectedImage - 1];
+            const isCorrect = selectedImg.isLiminal;
+            
+            const resultDiv = document.getElementById('resultMessage');
+            resultDiv.style.display = 'block';
+            
+            if (isCorrect) {
+                score++;
+                resultDiv.textContent = '✅ ПРАВИЛЬНО! Это лиминальное фото.';
+                resultDiv.className = 'result-message result-correct';
+                document.getElementById(`image${selectedImage}`).classList.add('correct');
+                
+                const otherNum = selectedImage === 1 ? 2 : 1;
+                document.getElementById(`image${otherNum}`).style.opacity = '0.3';
+            } else {
+                resultDiv.textContent = '❌ НЕВЕРНО. Это не лиминальное фото.';
+                resultDiv.className = 'result-message result-wrong';
+                document.getElementById(`image${selectedImage}`).classList.add('wrong');
+                
+                const correctNum = question.images[0].isLiminal ? 1 : 2;
+                document.getElementById(`image${correctNum}`).classList.add('correct');
+                document.getElementById(`image${correctNum === 1 ? 2 : 1}`).style.opacity = '0.3';
+            }
+            
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('nextBtn').style.display = 'inline-block';
+            
+            updateScore();
+        }
+
+        // Следующий вопрос
+        function nextQuestion() {
+            currentQuestion++;
+            loadQuestion();
+        }
+
+        // Обновить счёт
+        function updateScore() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('total').textContent = questions.length;
+        }
+
+        // Конец игры
+        function endGame() {
+            const percentage = Math.round((score / questions.length) * 100);
+            let message = '';
+            
+            if (percentage === 100) {
+                message = '🏆 ИДЕАЛЬНО! Ты настоящий эксперт лиминальности!';
+            } else if (percentage >= 80) {
+                message = '🎯 ОТЛИЧНО! Ты хорошо разбираешься в лиминальных пространствах!';
+            } else if (percentage >= 60) {
+                message = '👍 ХОРОШО! Но можно лучше!';
+            } else if (percentage >= 40) {
+                message = '🤔 НЕПЛОХО, но стоит потренироваться!';
+            } else {
+                message = '📚 Попробуй ещё раз! Изучи теорию выше!';
+            }
+            
+            document.getElementById('gameImages').style.display = 'none';
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('nextBtn').style.display = 'none';
+            
+            const resultDiv = document.getElementById('resultMessage');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result-message';
+            resultDiv.innerHTML = `
+                <strong>ИГРА ОКОНЧЕНА!</strong><br><br>
+                Твой счёт: ${score} из ${questions.length}<br>
+                ${percentage}% правильных ответов<br><br>
+                ${message}
+            `;
+        }
+
+        // Начать игру
+        function startGame() {
+            createQuestions();
+            currentQuestion = 0;
+            score = 0;
+            loadQuestion();
+        }
+
+        // Запуск при загрузке
+        startGame();
+    </script>
+    <!-- === СЧЁТЧИК ПОСЕЩЕНИЙ === -->
+<div style="position: fixed; top: 10px; left: 10px; background: rgba(0,0,0,0.8); border: 1px solid #444; padding: 10px 15px; font-size: 0.75rem; color: #888; z-index: 1000; letter-spacing: 1px;">
+    👁 <span id="viewCount">0</span> просмотров | 
+    👤 <span id="userCount">0</span> пользователей
+</div>
+
+<script>
+    // === СЧЁТЧИК ПОСЕЩЕНИЙ ===
+    // Использует localStorage для подсчёта уникальных пользователей
+    
+    function initCounter() {
+        // Генерируем уникальный ID для этого устройства/браузера
+        let deviceId = localStorage.getItem('liminalistic_device_id');
+        
+        if (!deviceId) {
+            deviceId = 'device_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('liminalistic_device_id', deviceId);
+        }
+        
+        // Получаем текущие значения
+        let viewCount = parseInt(localStorage.getItem('liminalistic_views') || '0');
+        let userCount = parseInt(localStorage.getItem('liminalistic_users') || '0');
+        
+        // Увеличиваем счётчик просмотров
+        viewCount++;
+        localStorage.setItem('liminalistic_views', viewCount);
+        
+        // Проверяем, новый ли это пользователь
+        let deviceVisited = localStorage.getItem('liminalistic_visited_' + deviceId);
+        
+        if (!deviceVisited) {
+            // Новый пользователь
+            userCount++;
+            localStorage.setItem('liminalistic_users', userCount);
+            localStorage.setItem('liminalistic_visited_' + deviceId, 'true');
+        }
+        
+        // Обновляем отображение
+        document.getElementById('viewCount').textContent = viewCount;
+        document.getElementById('userCount').textContent = userCount;
+    }
+    
+    // Запускаем при загрузке страницы
+    initCounter();
+</script>
+<!-- === КОНЕЦ СЧЁТЧИКА === -->
+</body>
+</html>
